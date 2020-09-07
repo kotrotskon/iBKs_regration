@@ -25,7 +25,7 @@ raw_dataset = pd.read_csv(dataset_path, names=column_names, na_values="?", comme
 dataset = raw_dataset.copy()
 dataset = dataset.dropna()
 
-train_dataset = dataset.sample(frac=0.8, random_state=0)
+train_dataset = dataset.sample(frac=0.9, random_state=0)
 test_dataset = dataset.drop(train_dataset.index)
 
 train_labels_a = train_dataset.pop('distance_a')
@@ -39,8 +39,8 @@ test_labels_d = test_dataset.pop('distance_d')
 train_labels_e = train_dataset.pop('distance_e')
 test_labels_e = test_dataset.pop('distance_e')
 
-train_labels = train_labels_e
-test_labels = test_labels_e
+train_labels = train_labels_a
+test_labels = test_labels_a
 
 train_dataset.drop(["id", "point", "timestamp"], axis=1, inplace=True)
 test_dataset.drop(["id", "point", "timestamp"], axis=1, inplace=True)
@@ -83,7 +83,7 @@ model = build_model()
 
 model.summary()
 
-checkpoint_path = "training/cp_e.ckpt"
+checkpoint_path = "training/cp.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 
 # Create a callback that saves the model's weights
@@ -127,6 +127,8 @@ early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
 early_history = model.fit(normed_train_data, train_labels,
                     epochs=EPOCHS, validation_split=0.2, verbose=0,
                     callbacks=[cp_callback, early_stop, tfdocs.modeling.EpochDots()])
+
+model.save('saved_model/my_model')
 
 plotter.plot({'Early Stopping': early_history}, metric="mae")
 plt.ylim([0, 150])
