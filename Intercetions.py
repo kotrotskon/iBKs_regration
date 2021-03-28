@@ -167,15 +167,15 @@ def get_intersection_circles(r_a, r_b, r_c, r_d, r_e, str_real_position):
 
     if print_image():
         plt.plot([position[0]], [position[1]], '+', color='g')
-        plt.plot([real_position[0]], [real_position[1]], '+', color='b')
+        plt.plot([real_position[0]], [real_position[1]], '+', color='c')
         title = "position: "+str(int(position[0]))+" "+str(int(position[1]))+\
                 ", realPosition: "+str(int(real_position[0]))+" "+str(int(real_position[1]))+\
                 ", distance: "+str(int(distance))
 
         plt.title(title)
-        # if distance < 50:
-        #     print("print")
-            # plt.show()
+        if 60 < distance < 70:
+            print("print")
+            plt.show()
 
     plt.close()
     return distance
