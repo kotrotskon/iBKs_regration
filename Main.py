@@ -13,15 +13,17 @@ import pandas as pd
 print(tf.version.VERSION)
 
 column_names = ['id', 'point', 'rssi_a', 'rssi_b', 'rssi_c', 'rssi_d', 'rssi_e',
-                'distance_a', 'distance_b', 'distance_c', 'distance_d', 'distance_e', 'timestamp']
+                'distance_a', 'distance_b', 'distance_c', 'distance_d', 'distance_e']
 
-dataset_path = './measurements.csv'
+dataset_path = 'measurements.csv'
 raw_dataset = pd.read_csv(dataset_path, names=column_names, na_values="?", comment='\t', sep=";", skipinitialspace=True)
 dataset = raw_dataset.copy()
 dataset = dataset.dropna()
 
-train_dataset = dataset.sample(frac=0.8, random_state=0)
-test_dataset = dataset.drop(train_dataset.index)
+# train_dataset = dataset.sample(frac=0.8, random_state=0)
+# test_dataset = dataset.drop(train_dataset.index)
+test_dataset = dataset
+
 
 test_labels_a = test_dataset.pop('distance_a')
 test_labels_b = test_dataset.pop('distance_b')
@@ -30,7 +32,7 @@ test_labels_d = test_dataset.pop('distance_d')
 test_labels_e = test_dataset.pop('distance_e')
 points = test_dataset.pop('point')
 
-test_dataset.drop(["id", "timestamp"], axis=1, inplace=True)
+test_dataset.drop(["id"], axis=1, inplace=True)
 
 train_stats = test_dataset.describe()
 train_stats = train_stats.transpose()

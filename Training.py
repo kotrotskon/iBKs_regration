@@ -20,7 +20,7 @@ print(tf.__version__)
 column_names = ['id', 'point', 'rssi_a', 'rssi_b', 'rssi_c', 'rssi_d', 'rssi_e',
                 'distance_a', 'distance_b', 'distance_c', 'distance_d', 'distance_e', 'timestamp']
 
-dataset_path = './measurements.csv'
+dataset_path = 'measurements.csv'
 raw_dataset = pd.read_csv(dataset_path, names=column_names, na_values="?", comment='\t', sep=";", skipinitialspace=True)
 dataset = raw_dataset.copy()
 dataset = dataset.dropna()
