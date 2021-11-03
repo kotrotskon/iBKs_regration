@@ -63,12 +63,20 @@ checkpoint_dir_e = os.path.dirname(checkpoint_path_e)
 
 def create_model():
     model = keras.Sequential([
-        layers.Dense(64, activation='relu', input_shape=[5]),
+        layers.Dense(512, activation='relu', input_shape=[5]),
+        layers.Dense(512, activation='relu'),
+        layers.Dense(256, activation='relu'),
+        layers.Dense(256, activation='relu'),
+        layers.Dense(128, activation='relu'),
+        layers.Dense(128, activation='relu'),
         layers.Dense(64, activation='relu'),
-        layers.Dense(1)
+        layers.Dense(64, activation='relu'),
+        layers.Dense(1, activation="linear")
     ])
 
-    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    optimizer = tf.keras.optimizers.Adam()
+
+    model.compile(loss='mae', optimizer=optimizer, metrics=['mae', 'mse'])
     return model
 
 

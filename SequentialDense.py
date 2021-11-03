@@ -20,7 +20,7 @@ print(tf.__version__)
 column_names = ['id', 'point', 'rssi_a', 'rssi_b', 'rssi_c', 'rssi_d', 'rssi_e',
                 'distance_a', 'distance_b', 'distance_c', 'distance_d', 'distance_e', 'timestamp']
 
-dataset_path = 'measurements.csv'
+dataset_path = 'measurements_all.csv'
 raw_dataset = pd.read_csv(dataset_path, names=column_names, na_values="?", comment='\t', sep=";", skipinitialspace=True)
 dataset = raw_dataset.copy()
 dataset = dataset.dropna()
@@ -68,14 +68,21 @@ print(test_labels)
 
 def build_model():
     model = keras.Sequential([
-        layers.Dense(64, activation='relu', input_shape=[len(train_dataset.keys())]),
+        layers.Dense(512, activation='relu', input_shape=[len(train_dataset.keys())]),
+        layers.Dense(512, activation='relu'),
+        layers.Dense(256, activation='relu'),
+        layers.Dense(256, activation='relu'),
+        layers.Dense(128, activation='relu'),
+        layers.Dense(128, activation='relu'),
         layers.Dense(64, activation='relu'),
-        layers.Dense(1)
+        layers.Dense(64, activation='relu'),
+        layers.Dense(1, activation="linear")
     ])
 
-    optimizer = tf.keras.optimizers.RMSprop(0.001)
+    optimizer = tf.keras.optimizers.Adam()
 
-    model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    model.compile(loss='mae', optimizer=optimizer, metrics=['mae', 'mse'])
+
     return model
 
 
@@ -96,11 +103,14 @@ example_result = model.predict(example_batch)
 print(example_result)
 
 
-EPOCHS = 1000
+EPOCHS = 200
 
 history = model.fit(normed_train_data, train_labels,
-                    epochs=EPOCHS, validation_split=0.2, verbose=0,
-                    callbacks=[tfdocs.modeling.EpochDots()])
+                    epochs=EPOCHS, validation_split=0.2,
+                    batch_size=1024,
+                    validation_data=(normed_test_data, test_labels),
+                    verbose=1,
+                    callbacks=[cp_callback])
 
 hist = pd.DataFrame(history.history)
 hist['epoch'] = history.epoch
