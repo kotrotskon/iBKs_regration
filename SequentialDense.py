@@ -39,8 +39,8 @@ test_labels_d = test_dataset.pop('distance_d')
 train_labels_e = train_dataset.pop('distance_e')
 test_labels_e = test_dataset.pop('distance_e')
 
-train_labels = train_labels_a
-test_labels = test_labels_a
+train_labels = train_labels_e
+test_labels = test_labels_e
 
 train_dataset.drop(["id", "point", "timestamp"], axis=1, inplace=True)
 test_dataset.drop(["id", "point", "timestamp"], axis=1, inplace=True)
@@ -68,23 +68,40 @@ print(test_labels)
 
 def build_model():
     model = keras.Sequential([
-        layers.Dense(512, activation='relu', input_shape=[len(train_dataset.keys())]),
+        layers.Dense(1024, activation='relu', input_shape=[len(train_dataset.keys())]),
+        keras.layers.LeakyReLU(),
+        keras.layers.BatchNormalization(),
+        keras.layers.Dropout(0.4),
         layers.Dense(512, activation='relu'),
+        keras.layers.LeakyReLU(),
+        keras.layers.BatchNormalization(),
+        keras.layers.Dropout(0.3),
+        layers.Dense(512, activation='relu'),
+        keras.layers.LeakyReLU(),
+        keras.layers.BatchNormalization(),
+        keras.layers.Dropout(0.3),
         layers.Dense(256, activation='relu'),
+        keras.layers.LeakyReLU(),
+        keras.layers.BatchNormalization(),
+        keras.layers.Dropout(0.2),
         layers.Dense(256, activation='relu'),
+        keras.layers.LeakyReLU(),
+        keras.layers.BatchNormalization(),
+        keras.layers.Dropout(0.2),
         layers.Dense(128, activation='relu'),
-        layers.Dense(128, activation='relu'),
-        layers.Dense(64, activation='relu'),
-        layers.Dense(64, activation='relu'),
+        keras.layers.LeakyReLU(),
         layers.Dense(1, activation="linear")
     ])
 
-    optimizer = tf.keras.optimizers.Adam()
+    optimizer = keras.optimizers.Adam(lr=0.005, decay=5e-4)
 
     model.compile(loss='mae', optimizer=optimizer, metrics=['mae', 'mse'])
 
     return model
 
+
+tf.keras.backend.clear_session()
+tf.random.set_seed(60)
 
 model = build_model()
 
@@ -103,7 +120,7 @@ example_result = model.predict(example_batch)
 print(example_result)
 
 
-EPOCHS = 200
+EPOCHS = 1000
 
 history = model.fit(normed_train_data, train_labels,
                     epochs=EPOCHS, validation_split=0.2,

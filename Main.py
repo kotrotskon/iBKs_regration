@@ -13,16 +13,16 @@ import pandas as pd
 print(tf.version.VERSION)
 
 column_names = ['id', 'point', 'rssi_a', 'rssi_b', 'rssi_c', 'rssi_d', 'rssi_e',
-                'distance_a', 'distance_b', 'distance_c', 'distance_d', 'distance_e']
+                'distance_a', 'distance_b', 'distance_c', 'distance_d', 'distance_e', 'timestamp']
 
 dataset_path = 'measurements.csv'
 raw_dataset = pd.read_csv(dataset_path, names=column_names, na_values="?", comment='\t', sep=";", skipinitialspace=True)
 dataset = raw_dataset.copy()
 dataset = dataset.dropna()
 
-# train_dataset = dataset.sample(frac=0.8, random_state=0)
-# test_dataset = dataset.drop(train_dataset.index)
-test_dataset = dataset
+train_dataset = dataset.sample(frac=0.9, random_state=0)
+test_dataset = dataset.drop(train_dataset.index)
+# test_dataset = dataset
 
 
 test_labels_a = test_dataset.pop('distance_a')
@@ -33,9 +33,11 @@ test_labels_e = test_dataset.pop('distance_e')
 points = test_dataset.pop('point')
 
 test_dataset.drop(["id"], axis=1, inplace=True)
+test_dataset.drop(["timestamp"], axis=1, inplace=True)
 
 train_stats = test_dataset.describe()
 train_stats = train_stats.transpose()
+print('train_stats')
 print(train_stats)
 
 
@@ -63,14 +65,28 @@ checkpoint_dir_e = os.path.dirname(checkpoint_path_e)
 
 def create_model():
     model = keras.Sequential([
-        layers.Dense(512, activation='relu', input_shape=[5]),
+        layers.Dense(1024, activation='relu', input_shape=[5]),
+        keras.layers.LeakyReLU(),
+        keras.layers.BatchNormalization(),
+        keras.layers.Dropout(0.4),
         layers.Dense(512, activation='relu'),
+        keras.layers.LeakyReLU(),
+        keras.layers.BatchNormalization(),
+        keras.layers.Dropout(0.3),
+        layers.Dense(512, activation='relu'),
+        keras.layers.LeakyReLU(),
+        keras.layers.BatchNormalization(),
+        keras.layers.Dropout(0.3),
         layers.Dense(256, activation='relu'),
+        keras.layers.LeakyReLU(),
+        keras.layers.BatchNormalization(),
+        keras.layers.Dropout(0.2),
         layers.Dense(256, activation='relu'),
+        keras.layers.LeakyReLU(),
+        keras.layers.BatchNormalization(),
+        keras.layers.Dropout(0.2),
         layers.Dense(128, activation='relu'),
-        layers.Dense(128, activation='relu'),
-        layers.Dense(64, activation='relu'),
-        layers.Dense(64, activation='relu'),
+        keras.layers.LeakyReLU(),
         layers.Dense(1, activation="linear")
     ])
 
