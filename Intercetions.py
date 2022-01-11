@@ -173,7 +173,7 @@ def get_intersection_circles(r_a, r_b, r_c, r_d, r_e, str_real_position):
                 ", distance: "+str(int(distance))
 
         plt.title(title)
-        if distance > 300:
+        if 100 < distance > 150:
             print("print")
             plt.show()
 

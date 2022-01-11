@@ -20,7 +20,7 @@ print(tf.__version__)
 column_names = ['id', 'point', 'rssi_a', 'rssi_b', 'rssi_c', 'rssi_d', 'rssi_e',
                 'distance_a', 'distance_b', 'distance_c', 'distance_d', 'distance_e', 'timestamp']
 
-dataset_path = 'measurements_all.csv'
+dataset_path = 'measurements.csv'
 raw_dataset = pd.read_csv(dataset_path, names=column_names, na_values="?", comment='\t', sep=";", skipinitialspace=True)
 dataset = raw_dataset.copy()
 dataset = dataset.dropna()
@@ -68,32 +68,12 @@ print(test_labels)
 
 def build_model():
     model = keras.Sequential([
-        layers.Dense(1024, activation='relu', input_shape=[len(train_dataset.keys())]),
-        keras.layers.LeakyReLU(),
-        keras.layers.BatchNormalization(),
-        keras.layers.Dropout(0.4),
-        layers.Dense(512, activation='relu'),
-        keras.layers.LeakyReLU(),
-        keras.layers.BatchNormalization(),
-        keras.layers.Dropout(0.3),
-        layers.Dense(512, activation='relu'),
-        keras.layers.LeakyReLU(),
-        keras.layers.BatchNormalization(),
-        keras.layers.Dropout(0.3),
-        layers.Dense(256, activation='relu'),
-        keras.layers.LeakyReLU(),
-        keras.layers.BatchNormalization(),
-        keras.layers.Dropout(0.2),
-        layers.Dense(256, activation='relu'),
-        keras.layers.LeakyReLU(),
-        keras.layers.BatchNormalization(),
-        keras.layers.Dropout(0.2),
-        layers.Dense(128, activation='relu'),
-        keras.layers.LeakyReLU(),
-        layers.Dense(1, activation="linear")
+        layers.Dense(64, activation='relu', input_shape=[len(train_dataset.keys())]),
+        layers.Dense(64, activation='relu'),
+        layers.Dense(1)
     ])
 
-    optimizer = keras.optimizers.Adam(lr=0.005, decay=5e-4)
+    optimizer = keras.optimizers.RMSprop(0.001)
 
     model.compile(loss='mae', optimizer=optimizer, metrics=['mae', 'mse'])
 
@@ -166,7 +146,6 @@ plt.show()
 loss, mae, mse = model.evaluate(normed_test_data, test_labels, verbose=2)
 
 print("Testing set Mean Abs Error: {:5.2f} Distance".format(mae))
-
 
 test_predictions = model.predict(normed_test_data).flatten()
 
