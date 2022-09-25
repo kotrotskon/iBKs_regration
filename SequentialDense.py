@@ -13,7 +13,7 @@ import tensorflow_docs.plots
 import tensorflow_docs.modeling
 
 from tensorflow import keras
-from tensorflow.keras import layers
+from keras import layers
 
 print(tf.__version__)
 
@@ -68,12 +68,15 @@ print(test_labels)
 
 def build_model():
     model = keras.Sequential([
-        layers.Dense(64, activation='relu', input_shape=[len(train_dataset.keys())]),
+        layers.Dense(256, activation='relu', input_shape=[len(train_dataset.keys())]),
+        layers.Dense(256, activation='relu'),
+        layers.Dense(128, activation='relu'),
+        layers.Dense(128, activation='relu'),
         layers.Dense(64, activation='relu'),
         layers.Dense(1)
     ])
 
-    optimizer = keras.optimizers.RMSprop(0.001)
+    optimizer = tf.keras.optimizers.Adam()
 
     model.compile(loss='mae', optimizer=optimizer, metrics=['mae', 'mse'])
 
@@ -100,7 +103,7 @@ example_result = model.predict(example_batch)
 print(example_result)
 
 
-EPOCHS = 1000
+EPOCHS = 200
 
 history = model.fit(normed_train_data, train_labels,
                     epochs=EPOCHS, validation_split=0.2,

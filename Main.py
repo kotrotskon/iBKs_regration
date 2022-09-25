@@ -65,29 +65,12 @@ checkpoint_dir_e = os.path.dirname(checkpoint_path_e)
 
 def create_model():
     model = keras.Sequential([
-        layers.Dense(1024, activation='relu', input_shape=[5]),
-        keras.layers.LeakyReLU(),
-        keras.layers.BatchNormalization(),
-        keras.layers.Dropout(0.4),
-        layers.Dense(512, activation='relu'),
-        keras.layers.LeakyReLU(),
-        keras.layers.BatchNormalization(),
-        keras.layers.Dropout(0.3),
-        layers.Dense(512, activation='relu'),
-        keras.layers.LeakyReLU(),
-        keras.layers.BatchNormalization(),
-        keras.layers.Dropout(0.3),
+        layers.Dense(256, activation='relu', input_shape=[len(train_dataset.keys())]),
         layers.Dense(256, activation='relu'),
-        keras.layers.LeakyReLU(),
-        keras.layers.BatchNormalization(),
-        keras.layers.Dropout(0.2),
-        layers.Dense(256, activation='relu'),
-        keras.layers.LeakyReLU(),
-        keras.layers.BatchNormalization(),
-        keras.layers.Dropout(0.2),
         layers.Dense(128, activation='relu'),
-        keras.layers.LeakyReLU(),
-        layers.Dense(1, activation="linear")
+        layers.Dense(128, activation='relu'),
+        layers.Dense(64, activation='relu'),
+        layers.Dense(1)
     ])
 
     optimizer = tf.keras.optimizers.Adam()
